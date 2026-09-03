@@ -1,0 +1,34 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Notification Service API
+  description: Gửi thông báo đẩy đến khách hàng và tài xế theo sự kiện chuyến đi.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8087/api/v1
+paths:
+  /notifications:
+    get:
+      tags: [Notification Service]
+      summary: Lấy danh sách thông báo theo người dùng (FR21, FR22)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lấy danh sách thông báo thành công
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    notification_id: { type: string, example: "notif-1" }
+                    type: { type: string, example: "DRIVER_ARRIVED" }
+                    message: { type: string, example: "Tài xế đã đến điểm đón!" }
+                    sent_at: { type: string, format: date-time }
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
