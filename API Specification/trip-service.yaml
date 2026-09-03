@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Trip & Matching Service API
+  description: Quản lý đặt chuyến, matching tài xế và cập nhật trạng thái chuyến đi.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8084/api/v1
+paths:
+  /trips:
+    post:
+      tags: [Trip Service]
+      summary: Khách hàng gửi yêu cầu đặt xe (FR07, FR08, FR09, FR10)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [pickup_location, dropoff_location, vehicle_type]
+              properties:
+                pickup_location: { type: string, example: "12 Nguyễn Văn Bảo, Gò Vấp" }
+                dropoff_location: { type: string, example: "Sân bay Tân Sơn Nhất" }
+                vehicle_type: { type: string, enum: [4_SEATS, 7_SEATS, MOTORBIKE] }
+      responses:
+        '201':
+          description: Chuyến đi được tạo và đang tìm tài xế (SEARCHING)
+  /trips/{trip_id}:
+    get:
+      tags: [Trip Service]
+      summary: Theo dõi trạng thái chuyến đi thời gian thực (FR14)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: trip_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Trả về trạng thái chuyến đi hiện tại
+  /trips/{trip_id}/respond:
+    post:
+      tags: [Trip Service]
+      summary: Tài xế chấp nhận hoặc từ chối đề xuất chuyến (FR11, FR12, FR13)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: trip_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action]
+              properties:
+                action: { type: string, enum: [ACCEPT, REJECT] }
+      responses:
+        '200':
+          description: Đã ghi nhận lựa chọn của tài xế
+  /trips/{trip_id}/status:
+    patch:
+      tags: [Trip Service]
+      summary: Tài xế cập nhật trạng thái chuyến đi (FR15)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: trip_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [ARRIVED_AT_PICKUP, PICKED_UP, IN_TRANSIT, COMPLETED]
+      responses:
+        '200':
+          description: Cập nhật trạng thái thành công
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
