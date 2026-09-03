@@ -4,9 +4,9 @@
 | Thông tin | Nội dung |
 |---|---|
 | Khách hàng | Công ty ABC |
-| Thời gian triển khai | 7 tuần |
+| Thời gian triển khai |  |
 | Loại tài liệu | Software Requirements Specification (SRS) |
-| Người thực hiện | *(điền tên bạn / nhóm)* |
+| Người thực hiện | *Le Cong Hau* |
 | Môn học | Lập trình hướng dịch vụ |
 | Phiên bản | v1.0 |
 | Ngày cập nhật | *(điền ngày nộp)* |
