@@ -1,0 +1,72 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Driver Service API
+  description: Quản lý hồ sơ, phương tiện, trạng thái và định vị GPS của tài xế.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8083/api/v1
+paths:
+  /drivers/profile:
+    put:
+      tags: [Driver Service]
+      summary: Cập nhật hồ sơ và phương tiện tài xế (FR05)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                full_name: { type: string, example: "Trần Văn C" }
+                license_number: { type: string, example: "B2-12345678" }
+                plate_number: { type: string, example: "59A-123.45" }
+                vehicle_type: { type: string, enum: [4_SEATS, 7_SEATS, MOTORBIKE] }
+                model: { type: string, example: "Toyota Vios 2022" }
+      responses:
+        '200':
+          description: Cập nhật thành công
+  /drivers/status:
+    patch:
+      tags: [Driver Service]
+      summary: Chuyển đổi trạng thái sẵn sàng / ngừng hoạt động (FR06)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [AVAILABLE, OFFLINE, BUSY] }
+      responses:
+        '200':
+          description: Cập nhật trạng thái thành công
+  /drivers/location:
+    post:
+      tags: [Driver Service]
+      summary: Gửi định vị GPS thời gian thực (FR16)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lat, lng]
+              properties:
+                lat: { type: number, format: float, example: 10.822159 }
+                lng: { type: number, format: float, example: 106.686844 }
+      responses:
+        '200':
+          description: Lưu vị trí thành công
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
