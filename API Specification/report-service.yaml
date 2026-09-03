@@ -1,0 +1,42 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Report Service API
+  description: Báo cáo số chuyến, doanh thu và hiệu suất vận hành.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8089/api/v1
+paths:
+  /admin/reports/summary:
+    get:
+      tags: [Report Service]
+      summary: Báo cáo tổng hợp số chuyến, doanh thu, tỷ lệ hoàn thành (FR28)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: from_date
+          in: query
+          required: true
+          schema: { type: string, format: date, example: "2026-09-01" }
+        - name: to_date
+          in: query
+          required: true
+          schema: { type: string, format: date, example: "2026-09-30" }
+      responses:
+        '200':
+          description: Báo cáo số liệu vận hành
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_trips: { type: integer, example: 1200 }
+                  completed_trips: { type: integer, example: 1150 }
+                  cancelled_trips: { type: integer, example: 50 }
+                  total_revenue: { type: number, example: 85000000 }
+                  completion_rate: { type: string, example: "95.8%" }
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
