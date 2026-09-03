@@ -1,0 +1,38 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Rating Service API
+  description: Khách hàng đánh giá chất lượng tài xế sau chuyến đi.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8086/api/v1
+paths:
+  /trips/{trip_id}/rating:
+    post:
+      tags: [Rating Service]
+      summary: Khách hàng đánh giá tài xế (FR30)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: trip_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [score]
+              properties:
+                score: { type: integer, minimum: 1, maximum: 5, example: 5 }
+                comment: { type: string, example: "Tài xế chạy êm, nhiệt tình!" }
+      responses:
+        '201':
+          description: Gửi đánh giá thành công
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
