@@ -1,0 +1,99 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Operation & Admin Service API
+  description: Quản trị tài khoản, giám sát chuyến đi và xử lý sự cố vận hành.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8088/api/v1
+paths:
+  /admin/drivers:
+    post:
+      tags: [Admin Service]
+      summary: Nhân viên vận hành tạo tài khoản cho tài xế (FR03)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [full_name, phone, license_number]
+              properties:
+                full_name: { type: string, example: "Lê Văn Tài" }
+                phone: { type: string, example: "0912345678" }
+                license_number: { type: string, example: "C-98765432" }
+      responses:
+        '201':
+          description: Tạo tài xế thành công
+  /admin/users/{user_id}/status:
+    patch:
+      tags: [Admin Service]
+      summary: Khóa hoặc mở khóa tài khoản người dùng (FR24, FR27)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { type: string, enum: [ACTIVE, LOCKED] }
+      responses:
+        '200':
+          description: Cập nhật trạng thái tài khoản thành công
+  /admin/trips/live:
+    get:
+      tags: [Admin Service]
+      summary: Giám sát danh sách các chuyến đi đang diễn ra (FR23)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Danh sách chuyến đi thời gian thực
+  /admin/trips/{trip_id}/resolve:
+    post:
+      tags: [Admin Service]
+      summary: Xử lý chuyến đi gặp sự cố (FR25)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: trip_id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [action, resolution_note]
+              properties:
+                action: { type: string, enum: [CANCEL_TRIP, REASSIGN_DRIVER] }
+                resolution_note: { type: string, example: "Tài xế hỏng xe giữa đường" }
+      responses:
+        '200':
+          description: Đã xử lý sự cố thành công
+  /admin/payments/history:
+    get:
+      tags: [Admin Service]
+      summary: Tra cứu lịch sử giao dịch toàn hệ thống (FR26)
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Danh sách giao dịch
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
