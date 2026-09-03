@@ -1,0 +1,62 @@
+openapi: 3.0.3
+info:
+  title: CAB System - Billing & Payment Service API
+  description: Tính cước chuyến đi và tích hợp cổng thanh toán trực tuyến/tiền mặt.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8085/api/v1
+paths:
+  /trips/{trip_id}/fare:
+    get:
+      tags: [Payment Service]
+      summary: Tính số tiền cước chuyến đi (FR17)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: trip_id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Chi tiết tính cước
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  distance_km: { type: number, example: 5.5 }
+                  total_amount: { type: number, example: 75000 }
+  /payments/checkout:
+    post:
+      tags: [Payment Service]
+      summary: Xử lý thanh toán tiền mặt hoặc trực tuyến qua bên thứ 3 (FR18, FR19, FR20)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [trip_id, method]
+              properties:
+                trip_id: { type: string, example: "trip-001" }
+                method: { type: string, enum: [CASH, ONLINE] }
+      responses:
+        '200':
+          description: Thanh toán hoàn tất hoặc trả về URL thanh toán online
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  payment_id: { type: string, example: "pay-101" }
+                  status: { type: string, enum: [SUCCESS, FAILED, PENDING] }
+                  payment_url: { type: string, example: "https://sandbox.vnpayment.vn/..." }
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
